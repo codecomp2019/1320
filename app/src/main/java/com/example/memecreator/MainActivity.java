@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MotionEvent;
@@ -42,6 +43,8 @@ public class MainActivity extends Activity {
     private static final int REQ_CODE_SPEECH_INPUT = 100;
     //for Playing the intro audio
     MediaPlayer mp;
+    //counter for key press
+     int timer = 0;
     private Integer images[] = {R.drawable.pic1}; // was creating a n array of images with int as pointer
     private TextView  search_result;
     TextView text_display;
@@ -153,6 +156,7 @@ public class MainActivity extends Activity {
 
     // creating a method for data to be spoken by text anywhere they click
     public void textSpeak(){
+
         String data = text_display.getText().toString();
         Log.i("TTS", "button clicked: " + data);
         int speechStatus = textToSpeech.speak(data, TextToSpeech.QUEUE_FLUSH, null);
@@ -229,6 +233,28 @@ public class MainActivity extends Activity {
 
     }
 
+    // catches the onKeyDown button event
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        switch (keyCode) {
+
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                  //add change lmage code
+                //add text to speech
+                //same for keydown
+                Toast.makeText(getBaseContext(),"ONCE",Toast.LENGTH_SHORT).show();
+                timer++;
+                 if(timer == 2){
+                     Toast.makeText(getBaseContext(),"pressedlong",Toast.LENGTH_SHORT).show();
+                 }
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                   // same as above
+                return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
 
 
     @Override
