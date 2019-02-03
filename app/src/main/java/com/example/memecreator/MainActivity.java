@@ -65,20 +65,18 @@ public class MainActivity extends Activity {
     String message;
     // text To speech
     ImageView img_meme;
-
-    //
-    String currentUrl = IMG_URLS[0];
-    Bitmap bitmap;
-    //for Playing the intro audio
-    MediaPlayer mp;
-
     //counter for key press
     int timer = 0;
     int counter = 0;
 
+    //
+    String currentUrl = IMG_URLS[counter];
+    Bitmap bitmap;
+    //for Playing the intro audio
+    MediaPlayer mp;
+
     private TextView  search_result;
     TextView text_display;
-    String message;
     // text To speech
     TextToSpeech textToSpeech;
 
@@ -87,7 +85,7 @@ public class MainActivity extends Activity {
         setTheme(R.style.AppTheme); // Changing theme back to default app theme
         // Adding audio cue, to let know app started
         //Welcome Audio and Double Tap options
-        mp = MediaPlayer.create(getBaseContext(), R.raw.welcomeaudio);
+        mp = MediaPlayer.create(getBaseContext(), R.raw.welcome_message);
 
         // Start Audio
         mp.start();
@@ -95,111 +93,6 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ImageView img_meme;
-
-        // Initializer
-        img_meme = findViewById(R.id.meme_img);
-
-        text_display = findViewById(R.id.display_text);
-        search_result = findViewById(R.id.searchResult);
-
-        // Create an array and then compare results
-        ImageButton searchButton;
-        searchButton = (ImageButton) findViewById(R.id.btnSpeak);
-        searchButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                startVoiceInput();
-            }
-        });
-
-
-
-        // experimenting touch
-        img_meme.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-
-                switch (event.getAction()) {
-
-                    case MotionEvent.ACTION_DOWN:
-                        v.performClick();
-                      //  could open the search dialog
-                        // or could use to repeat commands
-                         textSpeak();
-                        break;
-                    default:
-                        break;
-                }
-                return false;
-            }
-        });
-
-        text_display.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-
-                switch (event.getAction()) {
-
-                    case MotionEvent.ACTION_DOWN:
-                        v.performClick();
-                        textSpeak();
-                        //  could open the search dialog
-                        // or could use to repeat commands
-                        break;
-                    default:
-                        break;
-                }
-                return false;
-            }
-        });
-
-
-         // text to speech
-
-        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status == TextToSpeech.SUCCESS) {
-                    mp = MediaPlayer.create(getBaseContext(), R.raw.reading);
-                    int ttsLang = textToSpeech.setLanguage(Locale.US);
-
-                    if (ttsLang == TextToSpeech.LANG_MISSING_DATA
-                            || ttsLang == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        Log.e("TTS", "The Language is not supported!");
-                    } else {
-                        Log.i("TTS", "Language Supported.");
-                    }
-                    Log.i("TTS", "Initialization success.");
-                } else {
-                    Toast.makeText(getApplicationContext(), "TTS Initialization failed!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-
-
-
-
-    }
-
-    // creating a method for data to be spoken by text anywhere they click
-    public void textSpeak(){
-
-         // Reading Text transition
-        String data = text_display.getText().toString();
-        Log.i("TTS", "button clicked: " + data);
-        int speechStatus = textToSpeech.speak(data, TextToSpeech.QUEUE_FLUSH, null);
-
-        if (speechStatus == TextToSpeech.ERROR)
-        {
-            Log.e("TTS", "Error in converting Text to Speech!");
-        }
-    }
-
 
 
         // Initializer
@@ -209,7 +102,7 @@ public class MainActivity extends Activity {
         search_result = findViewById(R.id.searchResult);
 
         try{
-            String caption = new ImageToText().execute(currentUrl).get();
+            bitmap = new ImageConverter().execute(currentUrl).get();
         }catch (Exception e){
 
         }
@@ -292,29 +185,13 @@ public class MainActivity extends Activity {
             }
         });
 
-
-
-// Speech to text
-    private void startVoiceInput() {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hello, How can I help you?");
-        try {
-            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
-        } catch (ActivityNotFoundException a) {
-
-        }
     }
 
-  // using the setter and getter to display what I spoke in textbox
-
-    public String getMsg(){
-        return message;
-    }
 
     // creating a method for data to be spoken by text anywhere they click
     public void textSpeak(){
+
+        // Reading Text transition
         String data = text_display.getText().toString();
         Log.i("TTS", "button clicked: " + data);
         int speechStatus = textToSpeech.speak(data, TextToSpeech.QUEUE_FLUSH, null);
@@ -324,6 +201,9 @@ public class MainActivity extends Activity {
             Log.e("TTS", "Error in converting Text to Speech!");
         }
     }
+
+
+
 
     // Speech to text
     private void startVoiceInput() {
@@ -337,16 +217,7 @@ public class MainActivity extends Activity {
 
         }
     }
-
     // using the setter and getter to display what I spoke in textbox
-
-    public String getMsg(){
-        return message;
-    }
-    public String setMessage(String message){
-        return this.message  = message;
-
-    }
 
     // getting the Value of text
     @Override
@@ -364,22 +235,26 @@ public class MainActivity extends Activity {
                         // Change to Next Image
                            incrementCounter();
                            mp = MediaPlayer.create(getBaseContext(), R.raw.next);
+                            try{
+                                bitmap = new ImageConverter().execute(currentUrl).get();
+                            }catch (Exception e){
 
+                            }
                     }
                     else if(msg.contains("previous"))
                     { // Change to previous image
-                      mp = MediaPlayer.create(getBaseContext(), R.raw.previous);
+                        mp = MediaPlayer.create(getBaseContext(), R.raw.previous);
 
                     }
                     else if(msg.contains("quit"))
                     {
                         // Quit Application
-                      mp = MediaPlayer.create(getBaseContext(), R.raw.terminateapp);
+                        mp = MediaPlayer.create(getBaseContext(), R.raw.terminateapp);
                     }
                     else if(msg.contains("analyze | image"))
                     {
                         // Analyze Image
-                      mp = MediaPlayer.create(getBaseContext(), R.raw.analyzingimage);
+                        mp = MediaPlayer.create(getBaseContext(), R.raw.analyzingimage);
 
                     }
                     else if(msg.contains("read image"))

@@ -1,4 +1,4 @@
-package com.example.memecreator;
+/** package com.example.memecreator;
 
 // <editor-fold defaultstate="collapsed" desc="Imports">
 import android.net.Uri;
@@ -40,7 +40,7 @@ public class ImageToText extends AsyncTask<String, Void, String>{
      * To change this license header, choose License Headers in Project Properties.
      * To change this template file, choose Tools | Templates
      * and open the template in the editor.
-     */
+     *
 
     public ImageToText(){
 
@@ -130,3 +130,4 @@ public class ImageToText extends AsyncTask<String, Void, String>{
         super.onPostExecute(s);
     }
 }
+ **/
