@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 
 import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import java.io.BufferedInputStream;
@@ -68,15 +70,19 @@ public class ImageToText extends AsyncTask<String, Void, String>{
 
     @Override
     protected String doInBackground(String... strings) {
-        String imageToAnalyze = strings[0];
-        HttpClient httpClient = new DefaultHttpClient();
-        HttpResponse response;
-        String responseString = null;
-        
-        try{
-            URIBuilder builder = new URIBuilder(sendImageToAnalyze);
-            URI uri = builder.build();
+        String url = strings[0];
 
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+
+        try {
+            URIBuilder builder = new URIBuilder(sendImageToAnalyze);
+
+            // Request parameters. All of them are optional.
+            builder.setParameter("visualFeatures", "Categories,Description,Color");
+            builder.setParameter("language", "en");
+
+            // Prepare the URI for the REST API method.
+            URI uri = builder.build();
             HttpPost request = new HttpPost(uri);
 
             // Request headers.
@@ -85,12 +91,12 @@ public class ImageToText extends AsyncTask<String, Void, String>{
 
             // Request body.
             StringEntity requestEntity =
-                    new StringEntity("{\"url\":\"" + imageToAnalyze + "\"}");
+                    new StringEntity("{\"url\":\"" + url + "\"}");
             request.setEntity(requestEntity);
 
             // Call the REST API method and get the response entity.
-            HttpResponse httpResponse = httpClient.execute(request);
-            HttpEntity entity = httpResponse.getEntity();
+            HttpResponse response = httpClient.execute(request);
+            HttpEntity entity = response.getEntity();
 
             if (entity != null) {
                 // Format and display the JSON response.
@@ -110,19 +116,13 @@ public class ImageToText extends AsyncTask<String, Void, String>{
                     }
                 }
 
-                responseString = caption;
+                return caption;
             }
-            
-        }catch (ClientProtocolException e){
-            
-        }catch (IOException e){
-            
-        }catch (URISyntaxException e){
-
-        }catch (JSONException e){
-
+        } catch (Exception e) {
+            // Display error message.
+            System.out.println(e.getMessage());
         }
-        return responseString;
+        return "";
     }
 
     @Override

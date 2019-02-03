@@ -1,11 +1,5 @@
 <resources>
     <string name="app_name">memeCreator</string>
-    <string name="img1">img1</string>
-    <string name="img2">img2</string>
-    <string name="img3">img3</string>
-    <string name="img4">img4</string>
-    <string name="img5">img5</string>
-    <string name="url1">https://sayingimages.com/wp-content/uploads/why-i-need-this-job-most-offensive-memes.jpg</string>
-    <string name="url2">http://www.kittyworks.com/images/xytokryfh34.jpg</string>
-    <string name="url3"></string>
+    <string name="search_name">Beme</string>
+    <string name="search_placeholder">search...!</string>
 </resources>
