@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">memeCreator</string>
+    <string name="search_name">Beme</string>
+    <string name="search_placeholder">search...!</string>
 </resources>
